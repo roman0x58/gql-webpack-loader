@@ -27,6 +27,10 @@
     "ts-jest": "^26.5.3",
     "typescript": "^4.2.3"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roman0x58/gql-webpack-loader"
+  },
   "author": "Roman Belikin",
   "license": "MIT"
 }
