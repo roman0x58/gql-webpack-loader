@@ -1,5 +1,5 @@
 # Naive GraphQL webpack loader
-[![npm version](https://badge.fury.io/js/gql-string-loader.svg)](https://badge.fury.io/js/gql-webpack-loader)
+[![npm version](https://badge.fury.io/js/gql-loader-webpack.svg)](https://badge.fury.io/js/gql-loader-webpack)
 
 GraphQL string loader turns your queries from`.gql` files into es6 module. The loader will produce the next result for an imported query:
 ```js
@@ -28,13 +28,13 @@ And in your JavaScript:
 ## Install
 
 ```
-npm install --save-dev gql-webpack-loader
+npm install --save-dev gql-loader-webpack
 ```
 
 or
 
 ```
-yarn add gql-webpack-loader
+yarn add gql-loader-webpack
 ```
 
 ## Webpack configuration
