@@ -1,2 +1,5 @@
 node_modules
 .idea
+index.js
+index.map.js
+package-lock.json

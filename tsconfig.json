@@ -1,5 +1,15 @@
 {
   "compilerOptions": {
-    "types": ["jest", "node"]
-  }
+    "outDir": "./",
+    "sourceRoot": "./index.ts",
+    "sourceMap": true,
+    "module": "commonjs",
+    "target": "es5",
+    "moduleResolution": "node",
+    "lib": ["es6", "dom", "esnext.asynciterable"],
+    "allowSyntheticDefaultImports": true,
+    "typeRoots": ["./node_modules/@types/"]
+  },
+  "include": ["./index.ts"],
+  "exclude": ["./node_modules/"]
 }
