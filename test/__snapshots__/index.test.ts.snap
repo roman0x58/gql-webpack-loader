@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`gql loader transforms GraphQL query to es6 module with operation name 1`] = `
+"export default { 
+ \\"ABC\\": { 
+                query: \`query ABC {
+  A
+  ...C
+}
+fragment C on ABC {
+  Y
+}\`,
+                operation: \\"ABC\\" 
+     } 
+ }"
+`;
