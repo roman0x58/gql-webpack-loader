@@ -29,13 +29,13 @@ And in your JavaScript:
 ## Install
 
 ```
-npm install --save-dev gql-loader-webpack
+npm install --save-dev gql-webpack-loader
 ```
 
 or
 
 ```
-yarn add gql-loader-webpack
+yarn add gql-webpack-loader
 ```
 
 ## Webpack configuration
