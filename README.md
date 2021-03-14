@@ -1,5 +1,6 @@
 # Naive GraphQL webpack loader
 [![npm version](https://badge.fury.io/js/gql-webpack-loader.svg)](https://badge.fury.io/js/gql-webpack-loader)
+[![Build Status](https://travis-ci.com/roman0x58/gql-webpack-loader.svg?branch=master)](https://travis-ci.com/github/roman0x58/gql-webpack-loader)
 
 GraphQL string loader turns your queries from`.gql` files into es6 module. The loader will produce the next result for an imported query:
 ```js
