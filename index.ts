@@ -9,7 +9,7 @@ const lookupFragments = (node: SelectionSetNode, acc: Array<string>): Array<stri
         if (i.kind === "FragmentSpread") return acc.concat(i.name.value)
         else if (i.selectionSet) return lookupFragments(i.selectionSet, acc)
         else return acc
-    }, acc) : []
+    }, acc) : acc
 }
 const renderOperationNode = (operation: OperationDefinitionNode, fragments: Array<FragmentDefinitionNode>) =>
     `{ 
