@@ -1,7 +1,7 @@
 {
-  "name": "gql-loader-webpack",
+  "name": "gql-webpack-loader",
   "version": "1.0.0",
-  "description": "Naive GraphQL string loader",
+  "description": "Naive GraphQL loader",
   "main": "index.js",
   "scripts": {
     "prepublish": "npm run build",
@@ -35,6 +35,7 @@
   "bugs": {
     "url": "https://github.com/roman0x58/gql-webpack-loader/issues"
   },
+  "homepage": "https://github.com/roman0x58/gql-webpack-loader",
   "author": "Roman Belikin",
   "license": "MIT"
 }
