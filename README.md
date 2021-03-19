@@ -2,7 +2,7 @@
 [![npm version](https://badge.fury.io/js/gql-webpack-loader.svg)](https://badge.fury.io/js/gql-webpack-loader)
 [![Build Status](https://travis-ci.com/roman0x58/gql-webpack-loader.svg?branch=master)](https://travis-ci.com/github/roman0x58/gql-webpack-loader)
 
-The GraphQL webpack loader turns your queries from`.gql` files into TypeScript module with corresponding declaration file(d.ts) using your generated TypeScript schema model. The loader will produce the next result for an imported query:
+The GraphQL webpack loader turns your queries from`.gql` files into TypeScript module with corresponding declaration file(d.ts) using your generated TypeScript graphql schema model. The loader will produce the next result for an imported query:
 ```js
 export default { 
     "ABC": {
