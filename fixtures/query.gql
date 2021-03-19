@@ -1,0 +1,22 @@
+query someQueryOperation ($id: String) {
+    someQueryOperation(id: $id) {
+        field1
+        field2
+        ...Fragment1
+    }
+}
+
+mutation someMutationOperation ($id: String) {
+    someMutationOperation(id: $id) {
+        field1
+        field2
+    }
+}
+
+fragment Fragment1 on SomeOperationReturnType {
+    field3
+}
+
+fragment Fragment2 on SomeOperationReturnType {
+    field4
+}

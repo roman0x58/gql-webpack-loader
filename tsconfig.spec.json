@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "webpack": ["./node_modules/@types/webpack/index.d.ts"]
+    },
     "types": ["jest", "node"]
   }
 }
