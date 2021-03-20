@@ -5,7 +5,8 @@ exports[`gql loader transforms GraphQL query to TS module and generates appropri
 import { someQueryOperationArgModel } from \\"./schema.ts\\";
 import { someMutationOperationArgModel } from \\"./schema.ts\\";
 declare const _default: {
-    queryOperationName: GqlModule<import(\\"./schema.ts\\").someQueryOperationResultType, someQueryOperationArgModel>;
+    queryOperationName1: GqlModule<import(\\"./schema.ts\\").someQueryOperationResultType, someQueryOperationArgModel>;
+    queryOperationName2: GqlModule<import(\\"./schema.ts\\").someQueryOperationResultType, someQueryOperationArgModel>;
     mutationOperationName: GqlModule<import(\\"./schema.ts\\").someMutationOperationResultType, someMutationOperationArgModel>;
 };
 export default _default;
@@ -16,9 +17,13 @@ exports[`gql loader transforms GraphQL query to TS module and generates appropri
 "\\"use strict\\";
 exports.__esModule = true;
 exports[\\"default\\"] = {
-    \\"queryOperationName\\": {
-        query: \\"query queryOperationName($id: String) {\\\\n  someQueryOperation(id: $id) {\\\\n    field1\\\\n    field2\\\\n    ...Fragment1\\\\n  }\\\\n}\\\\nfragment Fragment1 on SomeOperationReturnType {\\\\n  field3\\\\n}\\",
-        operation: \\"queryOperationName\\"
+    \\"queryOperationName1\\": {
+        query: \\"query queryOperationName1($id: String) {\\\\n  someQueryOperation(id: $id) {\\\\n    field1\\\\n    field2\\\\n    ...Fragment1\\\\n  }\\\\n}\\\\nfragment Fragment1 on SomeOperationReturnType {\\\\n  field3\\\\n}\\",
+        operation: \\"queryOperationName1\\"
+    },
+    \\"queryOperationName2\\": {
+        query: \\"query queryOperationName2($id: String) {\\\\n  someQueryOperation(id: $id) {\\\\n    field1\\\\n  }\\\\n}\\",
+        operation: \\"queryOperationName2\\"
     },
     \\"mutationOperationName\\": {
         query: \\"mutation mutationOperationName($id: String) {\\\\n  someMutationOperation(id: $id) {\\\\n    field1\\\\n    field2\\\\n  }\\\\n}\\",
@@ -31,7 +36,10 @@ exports[\\"default\\"] = {
 exports[`gql loader transforms GraphQL query to TS module without variable interface name configuration: declaration 1`] = `
 "import { GqlModule } from 'gql-webpack-loader';
 declare const _default: {
-    queryOperationName: GqlModule<import(\\"./schema.ts\\").someQueryOperationResultType, {
+    queryOperationName1: GqlModule<import(\\"./schema.ts\\").someQueryOperationResultType, {
+        [key: string]: any;
+    }>;
+    queryOperationName2: GqlModule<import(\\"./schema.ts\\").someQueryOperationResultType, {
         [key: string]: any;
     }>;
     mutationOperationName: GqlModule<import(\\"./schema.ts\\").someMutationOperationResultType, {
@@ -46,9 +54,13 @@ exports[`gql loader transforms GraphQL query to TS module without variable inter
 "\\"use strict\\";
 exports.__esModule = true;
 exports[\\"default\\"] = {
-    \\"queryOperationName\\": {
-        query: \\"query queryOperationName($id: String) {\\\\n  someQueryOperation(id: $id) {\\\\n    field1\\\\n    field2\\\\n    ...Fragment1\\\\n  }\\\\n}\\\\nfragment Fragment1 on SomeOperationReturnType {\\\\n  field3\\\\n}\\",
-        operation: \\"queryOperationName\\"
+    \\"queryOperationName1\\": {
+        query: \\"query queryOperationName1($id: String) {\\\\n  someQueryOperation(id: $id) {\\\\n    field1\\\\n    field2\\\\n    ...Fragment1\\\\n  }\\\\n}\\\\nfragment Fragment1 on SomeOperationReturnType {\\\\n  field3\\\\n}\\",
+        operation: \\"queryOperationName1\\"
+    },
+    \\"queryOperationName2\\": {
+        query: \\"query queryOperationName2($id: String) {\\\\n  someQueryOperation(id: $id) {\\\\n    field1\\\\n  }\\\\n}\\",
+        operation: \\"queryOperationName2\\"
     },
     \\"mutationOperationName\\": {
         query: \\"mutation mutationOperationName($id: String) {\\\\n  someMutationOperation(id: $id) {\\\\n    field1\\\\n    field2\\\\n  }\\\\n}\\",

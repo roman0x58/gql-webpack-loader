@@ -84,13 +84,13 @@ export default <webpack.loader.Loader>function (source: string) {
         .filter(([operation, f]) => gqlSchemaTsInterfaces.indexOf(options.variableInterfaceName(operation.operationName)) !== -1)
         .map(([op, f]) =>  options.variableInterfaceName(op.operationName))
 
-    const imports = validVariableNames.map((n) => `import { ${n} } from ${gqlSchemaRequest};`)
+    const imports = new Set(validVariableNames.map((n) => `import { ${n} } from ${gqlSchemaRequest};`)
         .concat([queryInterfaceImport(), mutationInterfaceImport()])
-        .filter(Boolean)
+        .filter(Boolean))
 
     const output = `
         import { GqlModule } from 'gql-webpack-loader';
-        ${imports.join(EOL)}
+        ${Array.from(imports).join(EOL)}
 
         export default { 
             ${operations.map(renderKeyValue(fragments, generateInterface(options, validVariableNames))).join(',' + EOL)}
