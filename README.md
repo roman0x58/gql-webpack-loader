@@ -82,6 +82,8 @@ yarn add gql-webpack-loader ts-loader
 }
 ```
 
+## Config
+
 ### 1. gqlSchemaPath *
 Path to TypeScript GraphQL schema. You can generate TypeScript schema with next libraries
  - https://github.com/victorgarciaesgi/simple-graphql-to-typescript
