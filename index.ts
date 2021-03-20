@@ -9,8 +9,10 @@ import loaderUtils from 'loader-utils'
 import { LoaderOptions } from "./src/LoaderOptions";
 
 type FragmentNames = Array<string>
-type Operation = [OperationDefinitionNode, FragmentNames]
+type OperationNode = OperationDefinitionNode & { operationName: string }
+type Operation = [OperationNode, FragmentNames]
 type GeneratedType = string
+
 
 const lookupFragments = (node: SelectionSetNode, acc: Array<string>): Array<string> => {
     return node ? node.selections.reduce((acc, i) => {
@@ -37,9 +39,9 @@ const getOptions = (loaderContext: webpack.loader.LoaderContext): LoaderOptions 
         options.variableInterfaceName = () => null
     return options
 }
-const generateInterface = (options: LoaderOptions, variableModels: Array<string>) => (operation: OperationDefinitionNode) : GeneratedType => {
+const generateInterface = (options: LoaderOptions, variableModels: Array<string>) => (operation: OperationNode) : GeneratedType => {
     const interfaceName = operation.operation === "mutation" ? options.mutationInterfaceName : options.queryInterfaceName;
-    return `GqlModule<${interfaceName}['${operation.name.value}'], ${variableModels.find(i => i === options.variableInterfaceName(operation.name.value)) || '{ [key: string]: any }'}>`
+    return `GqlModule<${interfaceName}['${operation.operationName}'], ${variableModels.find(i => i === options.variableInterfaceName(operation.operationName)) || '{ [key: string]: any }'}>`
 }
 
 export default <webpack.loader.Loader>function (source: string) {
@@ -54,7 +56,9 @@ export default <webpack.loader.Loader>function (source: string) {
     const [operations, fragments]: [Array<Operation>, Array<FragmentDefinitionNode>] =
         gqlDocumentNode.definitions.reduce(([operations, fragments], operation) => {
             if (operation.kind === "OperationDefinition") {
-                operations.push([operation, lookupFragments(operation.selectionSet, [])])
+                const headSelection = operation.selectionSet.selections[0];
+                (operation as OperationNode).operationName = headSelection?.kind === "Field" ? headSelection.name.value : operation.name.value
+                operations.push([operation as OperationNode, lookupFragments(operation.selectionSet, [])])
                 return [operations, fragments]
             } else if (operation.kind === "FragmentDefinition")
                 return [operations, fragments.concat(operation)]
@@ -77,8 +81,8 @@ export default <webpack.loader.Loader>function (source: string) {
         } else return `import { ${options.queryInterfaceName} } from ${gqlSchemaRequest};`
     }
     const validVariableNames = operations
-        .filter(([operation, f]) => gqlSchemaTsInterfaces.indexOf(options.variableInterfaceName(operation.name.value)) !== -1)
-        .map(([op, f]) =>  options.variableInterfaceName(op.name.value))
+        .filter(([operation, f]) => gqlSchemaTsInterfaces.indexOf(options.variableInterfaceName(operation.operationName)) !== -1)
+        .map(([op, f]) =>  options.variableInterfaceName(op.operationName))
 
     const imports = validVariableNames.map((n) => `import { ${n} } from ${gqlSchemaRequest};`)
         .concat([queryInterfaceImport(), mutationInterfaceImport()])
