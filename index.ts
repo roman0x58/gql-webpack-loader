@@ -10,6 +10,7 @@ import { LoaderOptions } from "./src/LoaderOptions";
 
 type FragmentNames = Array<string>
 type Operation = [OperationDefinitionNode, FragmentNames]
+type GeneratedType = string
 
 const lookupFragments = (node: SelectionSetNode, acc: Array<string>): Array<string> => {
     return node ? node.selections.reduce((acc, i) => {
@@ -24,30 +25,30 @@ const renderOperationNode = (operation: OperationDefinitionNode, fragments: Arra
                 operation: "${operation.name.value}" 
      }`
 
-const renderKeyValue = (fragments: Array<FragmentDefinitionNode>, genType: (OperationDefinitionNode) => string) =>
+const renderKeyValue = (fragments: Array<FragmentDefinitionNode>, genType: (OperationDefinitionNode) => GeneratedType) =>
     ([operation, fragmentNames]: Operation) => {
         let frags = fragments.filter((fragment) => fragmentNames.indexOf(fragment.name.value) !== -1)
         return `"${operation.name.value}": ${renderOperationNode(operation, frags)} as ${genType(operation)}`
     }
 
 const getOptions = (loaderContext: webpack.loader.LoaderContext): LoaderOptions => {
-    return loaderUtils.getOptions(loaderContext) as Readonly<LoaderOptions>
+    const options = loaderUtils.getOptions(loaderContext) as unknown as LoaderOptions
+    if(!options.variableInterfaceName)
+        options.variableInterfaceName = () => null
+    return options
 }
-const generateInterface = (options: LoaderOptions, variableModels: Array<string>) => (operation: OperationDefinitionNode) => {
+const generateInterface = (options: LoaderOptions, variableModels: Array<string>) => (operation: OperationDefinitionNode) : GeneratedType => {
     const interfaceName = operation.operation === "mutation" ? options.mutationInterfaceName : options.queryInterfaceName;
-    return `GqlModule<${interfaceName}['${operation.name.value}'], ${variableModels.find(i => i === operation.name.value + options.variablesSuffix) || 'any'}>`
+    return `GqlModule<${interfaceName}['${operation.name.value}'], ${variableModels.find(i => i === options.variableInterfaceName(operation.name.value)) || '`{ [key: string]: any }`'}>`
 }
 
-export default <webpack.loader.Loader>function (source) {
+export default <webpack.loader.Loader>function (source: string) {
     const ctx: webpack.loader.LoaderContext = this
-    const gqlDocumentNode = parse(source as string)
-    const options = getOptions(ctx)
+    
+    const gqlDocumentNode = parse(source)
+    const options: LoaderOptions = getOptions(ctx)
 
-    const getSchemaWebpackRequest = () => {
-       return loaderUtils.stringifyRequest(ctx, options.gqlSchemaPath)
-    }
-
-    const gqlSchemaRequest = getSchemaWebpackRequest()
+    const gqlSchemaRequest = loaderUtils.stringifyRequest(ctx, options.gqlSchemaPath)
     const gqlSchemaTsInterfaces = fs.readFileSync(options.gqlSchemaPath, 'utf-8')
 
     const [operations, fragments]: [Array<Operation>, Array<FragmentDefinitionNode>] =
@@ -76,8 +77,8 @@ export default <webpack.loader.Loader>function (source) {
         } else return `import { ${options.queryInterfaceName} } from ${gqlSchemaRequest};`
     }
     const validVariableNames = operations
-        .filter(([operation, f]) => gqlSchemaTsInterfaces.indexOf(operation.name.value + options.variablesSuffix) !== -1)
-        .map(([op, f]) => op.name.value + options.variablesSuffix)
+        .filter(([operation, f]) => gqlSchemaTsInterfaces.indexOf(options.variableInterfaceName(operation.name.value)) !== -1)
+        .map(([op, f]) =>  options.variableInterfaceName(op.name.value))
 
     const imports = validVariableNames.map((n) => `import { ${n} } from ${gqlSchemaRequest};`)
         .concat([queryInterfaceImport(), mutationInterfaceImport()])
