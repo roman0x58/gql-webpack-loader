@@ -89,11 +89,11 @@ Path to TypeScript GraphQL schema. You can generate TypeScript schema with next 
  - https://github.com/victorgarciaesgi/simple-graphql-to-typescript
  - https://github.com/dotansimha/graphql-code-generator
                                                                                          
-### 2 .mutationInterfaceName * 
+### 2. mutationInterfaceName * 
 Name of your mutation model
 
-### 3 .queryInterfaceName *
+### 3. queryInterfaceName *
 Name of your query model
 
-### 3 .variableInterfaceName (optional)
+### 4. variableInterfaceName (optional)
 Function that accepts operation name and returns the operation variable model name. If there's no variable model than `{ [key: string]: any }` will be used   
