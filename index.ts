@@ -39,7 +39,7 @@ const getOptions = (loaderContext: webpack.loader.LoaderContext): LoaderOptions 
 }
 const generateInterface = (options: LoaderOptions, variableModels: Array<string>) => (operation: OperationDefinitionNode) : GeneratedType => {
     const interfaceName = operation.operation === "mutation" ? options.mutationInterfaceName : options.queryInterfaceName;
-    return `GqlModule<${interfaceName}['${operation.name.value}'], ${variableModels.find(i => i === options.variableInterfaceName(operation.name.value)) || '`{ [key: string]: any }`'}>`
+    return `GqlModule<${interfaceName}['${operation.name.value}'], ${variableModels.find(i => i === options.variableInterfaceName(operation.name.value)) || '{ [key: string]: any }'}>`
 }
 
 export default <webpack.loader.Loader>function (source: string) {
