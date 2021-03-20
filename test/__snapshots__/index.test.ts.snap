@@ -27,31 +27,3 @@ exports[\\"default\\"] = {
 };
 "
 `;
-
-exports[`gql loader transforms GraphQL query to TS module and generating appropriate declaration file using provided schema: declaration 1`] = `
-"import { GqlModule } from 'gql-webpack-loader';
-import { someQueryOperationArgModel } from \\"./schema.ts\\";
-import { someMutationOperationArgModel } from \\"./schema.ts\\";
-declare const _default: {
-    someQueryOperation: GqlModule<import(\\"./schema.ts\\").someQueryOperationResultType, someQueryOperationArgModel>;
-    someMutationOperation: GqlModule<import(\\"./schema.ts\\").someMutationOperationResultType, someMutationOperationArgModel>;
-};
-export default _default;
-"
-`;
-
-exports[`gql loader transforms GraphQL query to TS module and generating appropriate declaration file using provided schema: output 1`] = `
-"\\"use strict\\";
-exports.__esModule = true;
-exports[\\"default\\"] = {
-    \\"someQueryOperation\\": {
-        query: \\"query someQueryOperation($id: String) {\\\\n  someQueryOperation(id: $id) {\\\\n    field1\\\\n    field2\\\\n    ...Fragment1\\\\n  }\\\\n}\\\\nfragment Fragment1 on SomeOperationReturnType {\\\\n  field3\\\\n}\\",
-        operation: \\"someQueryOperation\\"
-    },
-    \\"someMutationOperation\\": {
-        query: \\"mutation someMutationOperation($id: String) {\\\\n  someMutationOperation(id: $id) {\\\\n    field1\\\\n    field2\\\\n  }\\\\n}\\",
-        operation: \\"someMutationOperation\\"
-    }
-};
-"
-`;
