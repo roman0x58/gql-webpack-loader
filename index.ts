@@ -30,7 +30,7 @@ const renderOperationNode = (operation: OperationDefinitionNode, fragments: Arra
 const renderKeyValue = (fragments: Array<FragmentDefinitionNode>, genType: (OperationDefinitionNode) => GeneratedType) =>
     ([operation, fragmentNames]: Operation) => {
         let frags = fragments.filter((fragment) => fragmentNames.indexOf(fragment.name.value) !== -1)
-        return `"${operation.name.value}": ${renderOperationNode(operation, frags)} as ${genType(operation)}`
+        return `"${operation.name.value}": <${genType(operation)}>${renderOperationNode(operation, frags)}`
     }
 
 const getOptions = (loaderContext: webpack.loader.LoaderContext): LoaderOptions => {
@@ -41,10 +41,10 @@ const getOptions = (loaderContext: webpack.loader.LoaderContext): LoaderOptions 
 }
 const generateInterface = (options: LoaderOptions, variableModels: Array<string>) => (operation: OperationNode) : GeneratedType => {
     const interfaceName = operation.operation === "mutation" ? options.mutationInterfaceName : options.queryInterfaceName;
-    return `GqlModule<${interfaceName}['${operation.operationName}'], ${variableModels.find(i => i === options.variableInterfaceName(operation.operationName)) || '{ [key: string]: any }'}>`
+    return `GqlModule<${interfaceName}["${operation.operationName}"], ${variableModels.find(i => i === options.variableInterfaceName(operation.operationName)) || '{ [key: string]: any }'}>`
 }
 
-export default <webpack.loader.Loader>function (source: string) {
+export default function (source: string) {
     const ctx: webpack.loader.LoaderContext = this
     
     const gqlDocumentNode = parse(source)
@@ -69,27 +69,25 @@ export default <webpack.loader.Loader>function (source: string) {
 
     const mutationInterfaceImport = () => {
         if (gqlSchemaTsInterfaces.indexOf(options.mutationInterfaceName) == -1) {
-            console.error(`Mutation interface not found for name ${options.mutationInterfaceName} in schema located by path ${gqlSchemaRequest}.`)
-            return ""
-        } else return `import { ${options.mutationInterfaceName} } from ${gqlSchemaRequest};`
+            throw new Error(`Mutation interface not found for name ${options.mutationInterfaceName} in schema located by path ${gqlSchemaRequest}.`)
+        } else return `import type { ${options.mutationInterfaceName} } from ${gqlSchemaRequest};`
     }
 
     const queryInterfaceImport = () => {
         if (gqlSchemaTsInterfaces.indexOf(options.queryInterfaceName) == -1) {
-            console.error(`Query interface not found for name ${options.queryInterfaceName} in schema located by path ${gqlSchemaRequest}.`)
-            return ""
-        } else return `import { ${options.queryInterfaceName} } from ${gqlSchemaRequest};`
+            throw new Error(`Query interface not found for name ${options.queryInterfaceName} in schema located by path ${gqlSchemaRequest}.`)
+        } else return `import type { ${options.queryInterfaceName} } from ${gqlSchemaRequest};`
     }
     const validVariableNames = operations
         .filter(([operation, f]) => gqlSchemaTsInterfaces.indexOf(options.variableInterfaceName(operation.operationName)) !== -1)
         .map(([op, f]) =>  options.variableInterfaceName(op.operationName))
 
-    const imports = new Set(validVariableNames.map((n) => `import { ${n} } from ${gqlSchemaRequest};`)
+    const imports = new Set(validVariableNames.map((n) => `import type { ${n} } from ${gqlSchemaRequest};`)
         .concat([queryInterfaceImport(), mutationInterfaceImport()])
         .filter(Boolean))
 
     const output = `
-        import { GqlModule } from 'gql-webpack-loader';
+        import type { GqlModule } from 'gql-webpack-loader';
         ${Array.from(imports).join(EOL)}
 
         export default { 

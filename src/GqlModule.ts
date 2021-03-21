@@ -1,4 +1,4 @@
-import { GqlQuery } from "./GqlQuery";
+import type { GqlQuery } from "./GqlQuery";
 
 export interface GqlModule<T, V> {
     operation: string
