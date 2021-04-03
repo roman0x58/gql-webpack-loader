@@ -1,6 +1,7 @@
-import type { GqlQuery } from "./GqlQuery";
+import { GqlTypedString } from "./GqlTypedString";
+import { GqlQuery } from "./GqlQuery";
 
-export interface GqlModule<T, V> {
+export interface GqlModule<T extends GqlQuery, V> {
     operation: string
-    query: GqlQuery<T, V>
+    query: GqlTypedString<T, V>
 }

@@ -1,18 +1,12 @@
-# GraphQL webpack loader (WIP)
+# GraphQL webpack loader 
 [![npm version](https://badge.fury.io/js/gql-webpack-loader.svg)](https://badge.fury.io/js/gql-webpack-loader)
 [![Build Status](https://travis-ci.com/roman0x58/gql-webpack-loader.svg?branch=master)](https://travis-ci.com/github/roman0x58/gql-webpack-loader)
 
-The GraphQL webpack loader turns your queries from`.gql` files into TypeScript module with corresponding declaration file(d.ts) using your generated TypeScript graphql schema model. The loader will produce the following output for an imported GraphQL query:
-```ts
-import { GqlModule } from "gql-webpack-loader";
-import { someQueryOperationArgModel } from "./schema.ts";
-import { someMutationOperationArgModel } from "./schema.ts";
-import { QueryModel } from "./schema.ts";
-import { MutationModel } from "./schema.ts";
-
+The GraphQL webpack loader turns your queries from`.gql` files into JS module with corresponding declaration file(d.ts) using your generated TypeScript graphql schema model. The loader will produce the following output for an imported GraphQL query:
+```js
 export default {
-    someQueryOperation: {
-        query: `query someQueryOperation($id: String) {
+    "queryOperationName1": {
+        "query": `query queryOperationName1($id: String) {
       someQueryOperation(id: $id) {
         field1
         field2
@@ -22,19 +16,50 @@ export default {
     fragment Fragment1 on SomeOperationReturnType {
       field3
     }`,
-        operation: "someQueryOperation",
-    } as GqlModule<QueryModel["someQueryOperation"], someQueryOperationArgModel>,
-    someMutationOperation: {
-        query: `mutation someMutationOperation($id: String) {
+        "operation": "queryOperationName1"
+    },
+    "queryOperationName2": {
+        "query": `query queryOperationName2($id: String) {
+      someQueryOperation(id: $id) {
+        field1
+      }
+    }`,
+        "operation": "queryOperationName2"
+    },
+    "mutationOperationName": {
+        "query": `mutation mutationOperationName($id: String) {
       someMutationOperation(id: $id) {
         field1
         field2
       }
     }`,
-        operation: "someMutationOperation",
-    } as GqlModule<MutationModel["someMutationOperation"], someMutationOperationArgModel>,
-};
+        "operation": "mutationOperationName"
+    }
+}
 ```
+Generated .d.ts 
+```ts
+import type { GqlModule } from 'gql-webpack-loader';
+import type { QueryModel, MutationModel } from "./schema.ts";
+
+export type QueryOperationName1Query = {
+    "queryOperationName1"? : QueryModel["someQueryOperation"]
+};
+export type QueryOperationName2Query = {
+    "queryOperationName2"? : QueryModel["someQueryOperation"]
+};
+export type MutationOperationNameMutation = {
+    "mutationOperationName"? : MutationModel["someMutationOperation"]
+};
+
+declare const _default: {
+    "queryOperationName1": GqlModule<QueryOperationName1Query, { [key: string]: any }>;
+    "queryOperationName2": GqlModule<QueryOperationName2Query, { [key: string]: any }>;
+    "mutationOperationName": GqlModule<MutationOperationNameMutation, { [key: string]: any }>
+};
+
+export default _default;
+``` 
 
 And in your JavaScript:
 
@@ -47,17 +72,16 @@ import GqlQuery from 'query.gql'
 ## Install
 
 ```sh
-npm install --save-dev gql-webpack-loader ts-loader
+npm install --save-dev gql-webpack-loader
 ```
 
 or
 
 ```sh
-yarn add gql-webpack-loader ts-loader
+yarn add gql-webpack-loadel
 ```
 
 ## Webpack configuration
-### 1. Gql-webpack-loader configuration
 
 ```js
 {
@@ -72,16 +96,6 @@ yarn add gql-webpack-loader ts-loader
     }    
 }
 ```
-### 2. Ts loader configuration
-```js
-{
-    loader: 'ts-loader', 
-    options: {
-        appendTsSuffixTo: [/\.gql$/]
-    }
-}
-```
-
 ## Config
 
 ### 1. gqlSchemaPath *
@@ -97,3 +111,23 @@ Name of your query model
 
 ### 4. variableInterfaceName (optional)
 Function that accepts operation name and returns the operation variable model name. If there's no variable model than `{ [key: string]: any }` will be used   
+
+## Usage
+```ts
+// you should provide GraphQL execution function & the result type
+type Result<T = any> = {
+    data?: T;
+    errors?: Error[];
+}
+
+const execute = <T = any, V = Record<string, any>>(module: GqlModule<T, V>, variables?: V): Promise<Result<V>> => {
+  // your graphql query execution implementation
+}
+
+// and later in your code
+import GqlQuery from 'query.gql'
+execute(GqlQuery.operation).then((response) =>
+    // response will have a type information about your GraphQl query
+    response.data.operation    
+)
+```

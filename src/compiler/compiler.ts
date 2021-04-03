@@ -23,14 +23,6 @@ export default (fixture: string, options: LoaderOptions): Promise<[webpack.Stats
                 {
                     test: /\.gql$/,
                     use: [{
-                        loader: 'ts-loader',
-                        options: {
-                            context: __dirname,
-                            onlyCompileBundledFiles: true,
-                            configFile: path.resolve(__dirname, 'tsconfig.json'),
-                            appendTsSuffixTo: [/\.gql$/]
-                        }
-                    }, {
                         loader: path.resolve(__dirname, '../../index.js'),
                         options
                     }]

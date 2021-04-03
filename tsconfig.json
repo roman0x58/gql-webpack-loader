@@ -11,6 +11,7 @@
     "lib": ["es6", "dom", "esnext.asynciterable"],
     "typeRoots": ["./node_modules/@types/"],
     "declaration": true,
+    "downlevelIteration": true,
     "declarationMap": true,
     "skipLibCheck": true,
     "baseUrl": ".",
