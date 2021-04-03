@@ -65,8 +65,6 @@ export default _default;
 And in your JavaScript:
 
 ```js
-import { ABC } from 'query.gql'
-// or
 import GqlQuery from 'query.gql'
 ```
 
