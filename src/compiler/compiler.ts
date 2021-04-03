@@ -1,4 +1,5 @@
 import path from 'path';
+// @ts-ignore
 import webpack, { OutputFileSystem } from 'webpack';
 
 import { createFsFromVolume, Volume } from 'memfs';

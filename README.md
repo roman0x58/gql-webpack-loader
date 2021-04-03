@@ -39,26 +39,27 @@ export default {
 ```
 Generated .d.ts 
 ```ts
-import type { GqlModule } from 'gql-webpack-loader';
-import type { QueryModel, MutationModel } from "./schema.ts";
+import type { GqlModule, GqlQuery } from 'gql-webpack-loader';
+import type { someQueryOperationArgModel, someMutationOperationArgModel, QueryModel, MutationModel } from "./schema.ts";
 
-export type QueryOperationName1Query = {
+export interface QueryOperationName1Query extends GqlQuery {
     "queryOperationName1"? : QueryModel["someQueryOperation"]
-};
-export type QueryOperationName2Query = {
+}
+export interface QueryOperationName2Query extends GqlQuery {
     "queryOperationName2"? : QueryModel["someQueryOperation"]
-};
-export type MutationOperationNameMutation = {
+}
+export interface MutationOperationNameMutation extends GqlQuery {
     "mutationOperationName"? : MutationModel["someMutationOperation"]
-};
+}
 
 declare const _default: {
-    "queryOperationName1": GqlModule<QueryOperationName1Query, { [key: string]: any }>;
-    "queryOperationName2": GqlModule<QueryOperationName2Query, { [key: string]: any }>;
-    "mutationOperationName": GqlModule<MutationOperationNameMutation, { [key: string]: any }>
+    "queryOperationName1": GqlModule<QueryOperationName1Query, someQueryOperationArgModel>;
+    "queryOperationName2": GqlModule<QueryOperationName2Query, someQueryOperationArgModel>;
+    "mutationOperationName": GqlModule<MutationOperationNameMutation, someMutationOperationArgModel>
 };
 
 export default _default;
+
 ``` 
 
 And in your JavaScript:
