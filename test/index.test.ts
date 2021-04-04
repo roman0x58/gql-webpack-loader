@@ -36,4 +36,15 @@ describe("gql loader", () => {
             )
         }, 15000
     )
+    test('transforms GraphQL query to ES6 module without declaration', async () => {
+            return compiler('query.gql', {
+                debug: true
+            }).then(([stats]: [webpack.Stats, webpack.Compiler]) => {
+                const output = stats.toJson({source: true});
+                expect(output.modules[0].source).toMatchSnapshot('output')
+            }).catch((errors) =>
+                console.error(errors)
+            )
+        }, 15000
+    )
 })

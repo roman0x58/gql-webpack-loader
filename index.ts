@@ -72,8 +72,7 @@ export default function (source: string) {
         const gqlDocumentNode = parse(source)
         const options: LoaderOptions = getOptions(ctx)
 
-        const gqlSchemaRequest = loaderUtils.stringifyRequest(ctx, options.gqlSchemaPath)
-        const gqlSchemaTsInterfaces = fs.readFileSync(options.gqlSchemaPath, 'utf-8')
+
 
         const [operations, fragments]: [Array<OperationWithFragments>, Array<FragmentDefinitionNode>] =
             gqlDocumentNode.definitions.reduce(([operations, fragments], operation) => {
@@ -88,36 +87,43 @@ export default function (source: string) {
                 return [operations, fragments]
             }, [[], []])
 
-        const mutationInterfaceImport = () => {
-            if (gqlSchemaTsInterfaces.indexOf(options.mutationInterfaceName) == -1) {
-                throw new Error(`Mutation interface not found for name ${options.mutationInterfaceName} in schema located by path ${gqlSchemaRequest}.`)
-            } else return options.mutationInterfaceName
-        }
 
-        const queryInterfaceImport = () => {
-            if (gqlSchemaTsInterfaces.indexOf(options.queryInterfaceName) == -1) {
-                throw new Error(`Query interface not found for name ${options.queryInterfaceName} in schema located by path ${gqlSchemaRequest}.`)
-            } else return options.queryInterfaceName
-        }
-        const validVariableNames = operations
-            .filter(([operation, f]) => gqlSchemaTsInterfaces.indexOf(options.variableInterfaceName(operation.operationName)) !== -1)
-            .map(([op, f]) => options.variableInterfaceName(op.operationName))
 
-        const importNames =  [...new Set(validVariableNames.concat([queryInterfaceImport(), mutationInterfaceImport()]))]
-        const imports = stripMargin`
+        if(options.declaration) {
+            const gqlSchemaRequest = loaderUtils.stringifyRequest(ctx, options.gqlSchemaPath)
+            const gqlSchemaTsInterfaces = fs.readFileSync(options.gqlSchemaPath, 'utf-8')
+
+            const mutationInterfaceImport = () => {
+                if (gqlSchemaTsInterfaces.indexOf(options.mutationInterfaceName) == -1) {
+                    throw new Error(`Mutation interface not found for name ${options.mutationInterfaceName} in schema located by path ${gqlSchemaRequest}.`)
+                } else return options.mutationInterfaceName
+            }
+
+            const queryInterfaceImport = () => {
+                if (gqlSchemaTsInterfaces.indexOf(options.queryInterfaceName) == -1) {
+                    throw new Error(`Query interface not found for name ${options.queryInterfaceName} in schema located by path ${gqlSchemaRequest}.`)
+                } else return options.queryInterfaceName
+            }
+
+            const validVariableNames = operations
+                .filter(([operation, f]) => gqlSchemaTsInterfaces.indexOf(options.variableInterfaceName(operation.operationName)) !== -1)
+                .map(([op, f]) => options.variableInterfaceName(op.operationName))
+
+            const importNames = [...new Set(validVariableNames.concat([queryInterfaceImport(), mutationInterfaceImport()]))]
+            const imports = stripMargin`
             |import type { GqlModule, GqlQuery } from 'gql-webpack-loader';
             |import type { ${importNames.join(', ')} } from ${gqlSchemaRequest};`
 
-        const queryInterfaces = operations.map(generateQueryType(options))
+            const queryInterfaces = operations.map(generateQueryType(options))
 
-        const dtsLocation = (filename: string) => {
-            const baseName = path.basename(filename);
-            const dirName = path.dirname(filename);
-            return path.resolve(ctx.context, path.join(dirName, `${baseName}.d.ts`));
-        }
+            const dtsLocation = (filename: string) => {
+                const baseName = path.basename(filename);
+                const dirName = path.dirname(filename);
+                return path.resolve(ctx.context, path.join(dirName, `${baseName}.d.ts`));
+            }
 
-        const dtsAssetLocation = dtsLocation(ctx.resourcePath)
-        const dtsAssetOutput = stripMargin`
+            const dtsAssetLocation = dtsLocation(ctx.resourcePath)
+            const dtsAssetOutput = stripMargin`
             |${imports}
             |
             |${queryInterfaces.map(([_1, _2, tp]) => tp).join(EOL)}
@@ -128,22 +134,21 @@ export default function (source: string) {
             |
             |export default _default;`
 
-        const compilation = ctx._compilation
+            const compilation = ctx._compilation
 
-        compilation.hooks.additionalAssets.tapAsync('gql-webpack-loader', (callback) => {
-            const assetPath = path.relative(compilation.compiler.outputPath, dtsAssetLocation)
-            compilation.assets[assetPath] = toAsset(dtsAssetOutput)
-            callback()
-        })
+            compilation.hooks.additionalAssets.tapAsync('gql-webpack-loader', (callback) => {
+                const assetPath = path.relative(compilation.compiler.outputPath, dtsAssetLocation)
+                compilation.assets[assetPath] = toAsset(dtsAssetOutput)
+                callback()
+            })
+            if(options.debug)  console.debug('dtsOutput\n', dtsAssetOutput)
+        }
 
         const jsOutput = stripMargin`
             |export default { 
             |\t${operations.map(renderKeyValue(fragments)).join(',' + EOL + '\t')}
             |}`
-        if(options.debug) {
-            console.debug('jsOutput\n', jsOutput)
-            console.debug('dtsOutput\n', dtsAssetOutput)
-        }
+        if(options.debug) console.debug('jsOutput\n', jsOutput)
         return callback(null, jsOutput)
     } catch (error) {
         return callback(error)

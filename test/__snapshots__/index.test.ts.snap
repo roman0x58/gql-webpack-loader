@@ -58,6 +58,41 @@ fragment Fragment1 on SomeOperationReturnType {
 }"
 `;
 
+exports[`gql loader transforms GraphQL query to ES6 module without declaration: output 1`] = `
+"export default { 
+	\\"queryOperationName1\\": { 
+\\"query\\": \`query queryOperationName1($id: String) {
+  someQueryOperation(id: $id) {
+    field1
+    field2
+    ...Fragment1
+  }
+}
+fragment Fragment1 on SomeOperationReturnType {
+  field3
+}\`,
+\\"operation\\": \\"queryOperationName1\\" 
+},
+	\\"queryOperationName2\\": { 
+\\"query\\": \`query queryOperationName2($id: String) {
+  someQueryOperation(id: $id) {
+    field1
+  }
+}\`,
+\\"operation\\": \\"queryOperationName2\\" 
+},
+	\\"mutationOperationName\\": { 
+\\"query\\": \`mutation mutationOperationName($id: String) {
+  someMutationOperation(id: $id) {
+    field1
+    field2
+  }
+}\`,
+\\"operation\\": \\"mutationOperationName\\" 
+}
+}"
+`;
+
 exports[`gql loader transforms GraphQL query to ES6 module without variable interface name configuration: declaration 1`] = `
 "import type { GqlModule, GqlQuery } from 'gql-webpack-loader';
 import type { QueryModel, MutationModel } from \\"./schema.ts\\";

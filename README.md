@@ -89,6 +89,7 @@ yarn add gql-webpack-loadel
     loader: "gql-webpack-loader",
     options: {
         gqlSchemaPath: path.resolve(__dirname, '../fixtures/schema.ts'),
+        declaration: true,    
         mutationInterfaceName: 'MutationModel',
         queryInterfaceName: 'QueryModel',
         variableInterfaceName: (operationName) => operationName + 'ArgModel'    
@@ -97,21 +98,28 @@ yarn add gql-webpack-loadel
 ```
 ## Config
 
-### 1. gqlSchemaPath *
+### 1. declaration (boolean)
+Whether generate corresponding declaration (d.ts) file for generated module. 
+
+### 2. gqlSchemaPath (string)
+###### Required if `declaration` is true
 Path to TypeScript GraphQL schema. You can generate TypeScript schema with next libraries
  - https://github.com/victorgarciaesgi/simple-graphql-to-typescript
  - https://github.com/dotansimha/graphql-code-generator
                                                                                          
-### 2. mutationInterfaceName * 
-Name of your mutation model
+### 3. mutationInterfaceName (string) 
+###### Required if `declaration` is true
+Name of your mutation model. 
 
-### 3. queryInterfaceName *
+### 4. queryInterfaceName (string)
+###### Required if `declaration` is true
 Name of your query model
 
-### 4. variableInterfaceName (optional)
+### 5. variableInterfaceName (string)
+###### Optional
 Function that accepts operation name and returns the operation variable model name. If there's no variable model than `{ [key: string]: any }` will be used   
 
-## Usage
+## Declaration usage
 ```ts
 // you should provide GraphQL execution function & the result type
 type Result<T = any> = {
