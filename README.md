@@ -77,7 +77,7 @@ npm install --save-dev gql-webpack-loader
 or
 
 ```sh
-yarn add gql-webpack-loadel
+yarn add gql-webpack-loader
 ```
 
 ## Webpack configuration
