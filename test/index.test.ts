@@ -7,6 +7,7 @@ describe("gql loader", () => {
     test('transforms GraphQL query to ES6 module and generates appropriate declaration file using provided schema', async () => {
             return compiler('query.gql', {
                 gqlSchemaPath: path.resolve(__dirname, '../fixtures/schema.ts'),
+                declaration: true,
                 mutationInterfaceName: 'MutationModel',
                 queryInterfaceName: 'QueryModel',
                 debug: true,
@@ -24,6 +25,7 @@ describe("gql loader", () => {
     test('transforms GraphQL query to ES6 module without variable interface name configuration', async () => {
             return compiler('query.gql', {
                 gqlSchemaPath: path.resolve(__dirname, '../fixtures/schema.ts'),
+                declaration: true,
                 mutationInterfaceName: 'MutationModel',
                 queryInterfaceName: 'QueryModel',
                 debug: true
