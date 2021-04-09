@@ -72,8 +72,6 @@ export default function (source: string) {
         const gqlDocumentNode = parse(source)
         const options: LoaderOptions = getOptions(ctx)
 
-
-
         const [operations, fragments]: [Array<OperationWithFragments>, Array<FragmentDefinitionNode>] =
             gqlDocumentNode.definitions.reduce(([operations, fragments], operation) => {
                 if (operation.kind === "OperationDefinition") {
