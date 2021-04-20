@@ -5,13 +5,13 @@ exports[`gql loader transforms GraphQL query to ES6 module and generates appropr
 import type { someQueryOperationArgModel, someMutationOperationArgModel, QueryModel, MutationModel } from \\"./schema.ts\\";
 
 export interface QueryOperationName1Query extends GqlQuery {
-   \\"queryOperationName1\\"? : QueryModel[\\"someQueryOperation\\"]    
+   \\"someQueryOperation\\"? : QueryModel[\\"someQueryOperation\\"]    
 }
 export interface QueryOperationName2Query extends GqlQuery {
-   \\"queryOperationName2\\"? : QueryModel[\\"someQueryOperation\\"]    
+   \\"someQueryOperation\\"? : QueryModel[\\"someQueryOperation\\"]    
 }
 export interface MutationOperationNameMutation extends GqlQuery {
-   \\"mutationOperationName\\"? : MutationModel[\\"someMutationOperation\\"]    
+   \\"someMutationOperation\\"? : MutationModel[\\"someMutationOperation\\"]    
 }
 
 declare const _default: {
@@ -98,13 +98,13 @@ exports[`gql loader transforms GraphQL query to ES6 module without variable inte
 import type { QueryModel, MutationModel } from \\"./schema.ts\\";
 
 export interface QueryOperationName1Query extends GqlQuery {
-   \\"queryOperationName1\\"? : QueryModel[\\"someQueryOperation\\"]    
+   \\"someQueryOperation\\"? : QueryModel[\\"someQueryOperation\\"]    
 }
 export interface QueryOperationName2Query extends GqlQuery {
-   \\"queryOperationName2\\"? : QueryModel[\\"someQueryOperation\\"]    
+   \\"someQueryOperation\\"? : QueryModel[\\"someQueryOperation\\"]    
 }
 export interface MutationOperationNameMutation extends GqlQuery {
-   \\"mutationOperationName\\"? : MutationModel[\\"someMutationOperation\\"]    
+   \\"someMutationOperation\\"? : MutationModel[\\"someMutationOperation\\"]    
 }
 
 declare const _default: {

@@ -13,7 +13,7 @@ import { LoaderOptions } from "./src/LoaderOptions";
 import { stripMargin, capitalize } from "./src/util";
 
 type FragmentSpreads = Array<FragmentSpreadNode>
-type OperationNode = OperationDefinitionNode & { operationName: string }
+type OperationNode = OperationDefinitionNode & { fieldOperationName: string }
 type OperationWithFragments = [OperationNode, FragmentSpreads]
 type GeneratedType = string
 
@@ -53,12 +53,12 @@ const generateQueryType = (options: LoaderOptions) => (op: OperationWithFragment
     const queryInterfaceName = `${capitalize(operation.name.value)}${capitalize(operation.operation)}`
     return [op, queryInterfaceName, stripMargin`
         |export interface ${queryInterfaceName} extends GqlQuery {
-        |   "${operation.name.value}"? : ${resultTypeInterfaceName}["${operation.operationName}"]    
+        |   "${operation.fieldOperationName}"? : ${resultTypeInterfaceName}["${operation.fieldOperationName}"]    
         |}`
     ]
 }
 const generateModuleType = (options: LoaderOptions, variableModels: Array<string>) => (queryInterface: GeneratedType, operation: OperationNode): GeneratedType => {
-    return `GqlModule<${queryInterface}, ${variableModels.find(i => i === options.variableInterfaceName(operation.operationName)) || '{ [key: string]: any }'}>`
+    return `GqlModule<${queryInterface}, ${variableModels.find(i => i === options.variableInterfaceName(operation.fieldOperationName)) || '{ [key: string]: any }'}>`
 }
 
 const toAsset = (content) => ({ source: () => content, size: () => content.length})
@@ -76,7 +76,7 @@ export default function (source: string) {
             gqlDocumentNode.definitions.reduce(([operations, fragments], operation) => {
                 if (operation.kind === "OperationDefinition") {
                     const headSelection = operation.selectionSet.selections[0];
-                    (operation as OperationNode).operationName = headSelection?.kind === "Field" ? headSelection.name.value : operation.name.value
+                    (operation as OperationNode).fieldOperationName = headSelection?.kind === "Field" ? headSelection.name.value : operation.name.value
                     operations.push([operation as OperationNode, lookupFragmentSpreads(operation.selectionSet, [])])
                     return [operations, fragments]
                 } else if (operation.kind === "FragmentDefinition")
@@ -104,8 +104,8 @@ export default function (source: string) {
             }
 
             const validVariableNames = operations
-                .filter(([operation, f]) => gqlSchemaTsInterfaces.indexOf(options.variableInterfaceName(operation.operationName)) !== -1)
-                .map(([op, f]) => options.variableInterfaceName(op.operationName))
+                .filter(([operation, f]) => gqlSchemaTsInterfaces.indexOf(options.variableInterfaceName(operation.fieldOperationName)) !== -1)
+                .map(([op, f]) => options.variableInterfaceName(op.fieldOperationName))
 
             const importNames = [...new Set(validVariableNames.concat([queryInterfaceImport(), mutationInterfaceImport()]))]
             const imports = stripMargin`
