@@ -10,10 +10,11 @@ import fs from 'fs'
 import path from 'path'
 import loaderUtils from 'loader-utils'
 import { LoaderOptions } from "./src/LoaderOptions";
-import { stripMargin, capitalize } from "./src/util";
+import { capitalize, stripMargin } from "./src/util";
+import { RawSource } from "webpack-sources";
 
 type FragmentSpreads = Array<FragmentSpreadNode>
-type OperationNode = OperationDefinitionNode & { fieldOperationName: string }
+export type OperationNode = OperationDefinitionNode & { fieldOperationName: string }
 type OperationWithFragments = [OperationNode, FragmentSpreads]
 type GeneratedType = string
 
@@ -43,7 +44,9 @@ const renderDTSKeyValue = (genType: (GeneratedType, OperationDefinitionNode) => 
 const getOptions = (loaderContext: webpack.loader.LoaderContext): LoaderOptions => {
     const options = loaderUtils.getOptions(loaderContext) as unknown as LoaderOptions
     if (!options.variableInterfaceName)
-        options.variableInterfaceName = () => null
+        options.variableInterfaceName = ({  fieldOperationName, operation }: OperationNode) => {
+            return capitalize(operation) + capitalize(fieldOperationName) + 'ArgsModel'
+        }
     return options
 }
 const generateQueryType = (options: LoaderOptions) => (op: OperationWithFragments): [OperationWithFragments, string, GeneratedType] => {
@@ -58,10 +61,10 @@ const generateQueryType = (options: LoaderOptions) => (op: OperationWithFragment
     ]
 }
 const generateModuleType = (options: LoaderOptions, variableModels: Array<string>) => (queryInterface: GeneratedType, operation: OperationNode): GeneratedType => {
-    return `GqlModule<${queryInterface}, ${variableModels.find(i => i === options.variableInterfaceName(operation.fieldOperationName)) || '{ [key: string]: any }'}>`
+    return `GqlModule<${queryInterface}, ${variableModels.find(i => i === options.variableInterfaceName(operation)) || '{ [key: string]: any }'}>`
 }
 
-const toAsset = (content) => ({ source: () => content, size: () => content.length})
+const toAsset : (content: string) => RawSource = (content) => new RawSource(content)
 
 export default function (source: string) {
     const ctx: webpack.loader.LoaderContext = this
@@ -102,10 +105,11 @@ export default function (source: string) {
                     throw new Error(`Query interface not found for name ${options.queryInterfaceName} in schema located by path ${gqlSchemaRequest}.`)
                 } else return options.queryInterfaceName
             }
-
             const validVariableNames = operations
-                .filter(([operation, f]) => gqlSchemaTsInterfaces.indexOf(options.variableInterfaceName(operation.fieldOperationName)) !== -1)
-                .map(([op, f]) => options.variableInterfaceName(op.fieldOperationName))
+                .flatMap(([operation, f]) => {
+                    let argVariableName = options.variableInterfaceName(operation)
+                    return gqlSchemaTsInterfaces.indexOf(argVariableName) !== -1 ? [argVariableName] : []
+                })
 
             const importNames = [...new Set(validVariableNames.concat([queryInterfaceImport(), mutationInterfaceImport()]))]
             const imports = stripMargin`

@@ -18,10 +18,10 @@ export interface someMutationOperationResultType {
     field3: string
 }
 
-export interface someQueryOperationArgModel {
+export interface QuerySomeQueryOperationArgsModel {
     id: string
 }
 
-export interface someMutationOperationArgModel {
+export interface MutationSomeMutationOperationArgsModel {
     id: string
 }

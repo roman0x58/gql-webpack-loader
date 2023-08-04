@@ -10,13 +10,12 @@ describe("gql loader", () => {
                 declaration: true,
                 mutationInterfaceName: 'MutationModel',
                 queryInterfaceName: 'QueryModel',
-                debug: true,
-                variableInterfaceName: (operationName) =>
-                    operationName + 'ArgModel'
+                debug: true
             }).then(([stats, compiler]: [webpack.Stats, webpack.Compiler]) => {
-                const output = stats.toJson({source: true});expect((compiler.outputFileSystem as unknown as IFs).readFileSync("./fixtures/query.gql.d.ts", "utf-8")).toMatchSnapshot('declaration')
+                const output = stats.toJson({ source: true });
+                expect((compiler.outputFileSystem as unknown as IFs).readFileSync("./fixtures/query.gql.d.ts", "utf-8")).toMatchSnapshot('declaration')
                 expect(output.modules[0].source).toMatchSnapshot('output')
-                
+
             }).catch((errors) =>
                 console.error(errors)
             )
@@ -30,7 +29,7 @@ describe("gql loader", () => {
                 queryInterfaceName: 'QueryModel',
                 debug: true
             }).then(([stats, compiler]: [webpack.Stats, webpack.Compiler]) => {
-                const output = stats.toJson({source: true});
+                const output = stats.toJson({ source: true });
                 expect((compiler.outputFileSystem as unknown as IFs).readFileSync("./fixtures/query.gql.d.ts", "utf-8")).toMatchSnapshot('declaration')
                 expect(output.modules[0].source).toMatchSnapshot('output')
             }).catch((errors) =>
@@ -42,7 +41,7 @@ describe("gql loader", () => {
             return compiler('query.gql', {
                 debug: true
             }).then(([stats]: [webpack.Stats, webpack.Compiler]) => {
-                const output = stats.toJson({source: true});
+                const output = stats.toJson({ source: true });
                 expect(output.modules[0].source).toMatchSnapshot('output')
             }).catch((errors) =>
                 console.error(errors)

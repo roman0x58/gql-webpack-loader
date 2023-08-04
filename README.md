@@ -92,7 +92,9 @@ yarn add gql-webpack-loader
         declaration: true,    
         mutationInterfaceName: 'MutationModel',
         queryInterfaceName: 'QueryModel',
-        variableInterfaceName: (operationName) => operationName + 'ArgModel'    
+        variableInterfaceName: (operationNode) =>
+            // This used by default 
+            capitalize(operation) + capitalize(operation.fieldOperationName) + 'ArgModel'   
     }    
 }
 ```
@@ -103,7 +105,7 @@ Whether generate corresponding declaration (d.ts) file for generated module.
 
 ### 2. gqlSchemaPath (string)
 ###### Required if `declaration` is true
-Path to TypeScript GraphQL schema. You can generate TypeScript schema with next libraries
+Path to TypeScript GraphQL schema. You can generate TypeScript schema with the next libraries
  - https://github.com/victorgarciaesgi/simple-graphql-to-typescript
  - https://github.com/dotansimha/graphql-code-generator
                                                                                          
