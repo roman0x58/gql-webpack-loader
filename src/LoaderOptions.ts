@@ -6,5 +6,6 @@ export interface LoaderOptions {
     gqlSchemaPath?: string
     mutationInterfaceName?: string
     queryInterfaceName?: string
-    variableInterfaceName?: (operation: OperationNode) => string
+    exportNameBy?:(fileName: string) => string
+    variableInterfaceRe?:(operation: OperationNode) => RegExp
 }

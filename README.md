@@ -2,65 +2,8 @@
 [![npm version](https://badge.fury.io/js/gql-webpack-loader.svg)](https://badge.fury.io/js/gql-webpack-loader)
 [![Build Status](https://travis-ci.com/roman0x58/gql-webpack-loader.svg?branch=master)](https://travis-ci.com/github/roman0x58/gql-webpack-loader)
 
-The GraphQL webpack loader turns your queries from`.gql` files into JS module with corresponding declaration file(d.ts) using your generated TypeScript graphql schema model. The loader will produce the following output for an imported GraphQL query:
-```js
-export default {
-    "queryOperationName1": {
-        "query": `query queryOperationName1($id: String) {
-      someQueryOperation(id: $id) {
-        field1
-        field2
-        ...Fragment1
-      }
-    }
-    fragment Fragment1 on SomeOperationReturnType {
-      field3
-    }`,
-        "operation": "queryOperationName1"
-    },
-    "queryOperationName2": {
-        "query": `query queryOperationName2($id: String) {
-      someQueryOperation(id: $id) {
-        field1
-      }
-    }`,
-        "operation": "queryOperationName2"
-    },
-    "mutationOperationName": {
-        "query": `mutation mutationOperationName($id: String) {
-      someMutationOperation(id: $id) {
-        field1
-        field2
-      }
-    }`,
-        "operation": "mutationOperationName"
-    }
-}
-```
-Generated .d.ts 
-```ts
-import type { GqlModule, GqlQuery } from 'gql-webpack-loader';
-import type { someQueryOperationArgModel, someMutationOperationArgModel, QueryModel, MutationModel } from "./schema.ts";
-
-export interface QueryOperationName1Query extends GqlQuery {
-    "queryOperationName1"? : QueryModel["someQueryOperation"]
-}
-export interface QueryOperationName2Query extends GqlQuery {
-    "queryOperationName2"? : QueryModel["someQueryOperation"]
-}
-export interface MutationOperationNameMutation extends GqlQuery {
-    "mutationOperationName"? : MutationModel["someMutationOperation"]
-}
-
-declare const _default: {
-    "queryOperationName1": GqlModule<QueryOperationName1Query, someQueryOperationArgModel>;
-    "queryOperationName2": GqlModule<QueryOperationName2Query, someQueryOperationArgModel>;
-    "mutationOperationName": GqlModule<MutationOperationNameMutation, someMutationOperationArgModel>
-};
-
-export default _default;
-
-``` 
+The GraphQL webpack loader transforms your queries from .gql files into JavaScript modules, along with their corresponding declaration files (.d.ts), utilizing your generated TypeScript GraphQL schema model.
+To view the generated result, refer to the test snapshot.
 
 And in your JavaScript:
 
@@ -92,34 +35,44 @@ yarn add gql-webpack-loader
         declaration: true,    
         mutationInterfaceName: 'MutationModel',
         queryInterfaceName: 'QueryModel',
-        variableInterfaceName: (operationNode) =>
+        variableInterfaceRe: (operationNode) =>
             // This used by default 
-            capitalize(operation) + capitalize(operation.fieldOperationName) + 'ArgModel'   
+            new RegExp(`(${operation.operation}).*(${operation.fieldOperationName}).*argsmodel`, 'gmi')
     }    
 }
 ```
 ## Config
 
-### 1. declaration (boolean)
+### 1. declaration 
+#### Type: boolean
 Whether generate corresponding declaration (d.ts) file for generated module. 
 
-### 2. gqlSchemaPath (string)
+### 2. gqlSchemaPath
+#### Type: string
 ###### Required if `declaration` is true
 Path to TypeScript GraphQL schema. You can generate TypeScript schema with the next libraries
  - https://github.com/victorgarciaesgi/simple-graphql-to-typescript
  - https://github.com/dotansimha/graphql-code-generator
                                                                                          
-### 3. mutationInterfaceName (string) 
+### 3. mutationInterfaceName
+#### Type: string
 ###### Required if `declaration` is true
 Name of your mutation model. 
 
-### 4. queryInterfaceName (string)
+### 4. queryInterfaceName
+#### Type: string
 ###### Required if `declaration` is true
 Name of your query model
 
-### 5. variableInterfaceName (string)
+### 5. variableInterfaceRe 
+#### Type: (node: OperationNode) => RegExp
 ###### Optional
-Function that accepts operation name and returns the operation variable model name. If there's no variable model than `{ [key: string]: any }` will be used   
+A function that takes an operation node as input and returns a regular expression to validate variable imports. If no variable model is found, { [key: string]: any } will be used.
+
+### 5. exportNameBy 
+#### Type: (fileName: string) => string
+###### Optional
+A function that takes a fileName as input and returns a name for the export clause in both the GraphQL JS module and its declaration.
 
 ## Declaration usage
 ```ts

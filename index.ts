@@ -10,7 +10,7 @@ import fs from 'fs'
 import path from 'path'
 import loaderUtils from 'loader-utils'
 import { LoaderOptions } from "./src/LoaderOptions";
-import { capitalize, stripMargin } from "./src/util";
+import { capitalize, dedupe, isValidVariable, stripMargin } from "./src/util";
 import { RawSource } from "webpack-sources";
 
 type FragmentSpreads = Array<FragmentSpreadNode>
@@ -43,9 +43,9 @@ const renderDTSKeyValue = (genType: (GeneratedType, OperationDefinitionNode) => 
 
 const getOptions = (loaderContext: webpack.loader.LoaderContext): LoaderOptions => {
     const options = loaderUtils.getOptions(loaderContext) as unknown as LoaderOptions
-    if (!options.variableInterfaceName)
-        options.variableInterfaceName = ({  fieldOperationName, operation }: OperationNode) => {
-            return capitalize(operation) + capitalize(fieldOperationName) + 'ArgsModel'
+    if (!options.variableInterfaceRe)
+        options.variableInterfaceRe = (operation: OperationNode) => {
+            return new RegExp(`(${operation.operation}).*(${operation.fieldOperationName}).*argsmodel`, 'gmi')
         }
     return options
 }
@@ -60,11 +60,12 @@ const generateQueryType = (options: LoaderOptions) => (op: OperationWithFragment
         |}`
     ]
 }
-const generateModuleType = (options: LoaderOptions, variableModels: Array<string>) => (queryInterface: GeneratedType, operation: OperationNode): GeneratedType => {
-    return `GqlModule<${queryInterface}, ${variableModels.find(i => i === options.variableInterfaceName(operation)) || '{ [key: string]: any }'}>`
-}
 
-const toAsset : (content: string) => RawSource = (content) => new RawSource(content)
+const generateModuleType = (options: LoaderOptions, variableModels: Array<string>) => (queryInterface: GeneratedType, operation: OperationNode): GeneratedType => {
+    return `GqlModule<${queryInterface}, ${variableModels.filter(variableModel =>
+        options.variableInterfaceRe(operation).test(variableModel)).join(' & ') || '{ [key: string]: any }'}>`
+}
+const toAsset: (content: string) => RawSource = (content) => new RawSource(content)
 
 export default function (source: string) {
     const ctx: webpack.loader.LoaderContext = this
@@ -88,9 +89,15 @@ export default function (source: string) {
                 return [operations, fragments]
             }, [[], []])
 
+        const gqlBaseName = path.basename(ctx.resourcePath);
+        const gqlDirName = path.dirname(ctx.resourcePath);
+        const importName = options.exportNameBy?.(path.basename(ctx.resourcePath, '.gql')) || `_default`
 
+        if (!isValidVariable(importName)) {
+            throw new Error(`Invalid import name ${importName}. Please check loader 'importNameBy' function`)
+        }
 
-        if(options.declaration) {
+        if (options.declaration) {
             const gqlSchemaRequest = loaderUtils.stringifyRequest(ctx, options.gqlSchemaPath)
             const gqlSchemaTsInterfaces = fs.readFileSync(options.gqlSchemaPath, 'utf-8')
 
@@ -105,36 +112,27 @@ export default function (source: string) {
                     throw new Error(`Query interface not found for name ${options.queryInterfaceName} in schema located by path ${gqlSchemaRequest}.`)
                 } else return options.queryInterfaceName
             }
-            const validVariableNames = operations
-                .flatMap(([operation, f]) => {
-                    let argVariableName = options.variableInterfaceName(operation)
-                    return gqlSchemaTsInterfaces.indexOf(argVariableName) !== -1 ? [argVariableName] : []
-                })
 
-            const importNames = [...new Set(validVariableNames.concat([queryInterfaceImport(), mutationInterfaceImport()]))]
+            const validVariableNames = dedupe(operations.flatMap(([op, _]) =>
+                gqlSchemaTsInterfaces.match(options.variableInterfaceRe(op)) as string[] || []))
+            const importNames = dedupe(validVariableNames.concat([queryInterfaceImport(), mutationInterfaceImport()]))
             const imports = stripMargin`
             |import type { GqlModule, GqlQuery } from 'gql-webpack-loader';
             |import type { ${importNames.join(', ')} } from ${gqlSchemaRequest};`
 
             const queryInterfaces = operations.map(generateQueryType(options))
 
-            const dtsLocation = (filename: string) => {
-                const baseName = path.basename(filename);
-                const dirName = path.dirname(filename);
-                return path.resolve(ctx.context, path.join(dirName, `${baseName}.d.ts`));
-            }
-
-            const dtsAssetLocation = dtsLocation(ctx.resourcePath)
+            const dtsAssetLocation = path.resolve(ctx.context, path.join(gqlDirName, `${gqlBaseName}.d.ts`))
             const dtsAssetOutput = stripMargin`
             |${imports}
             |
             |${queryInterfaces.map(([_1, _2, tp]) => tp).join(EOL)}
             |
-            |declare const _default: {
+            |export declare const ${importName}: {
             |\t${queryInterfaces.map(renderDTSKeyValue(generateModuleType(options, validVariableNames))).join(';' + EOL + '\t')}
             |};
             |
-            |export default _default;`
+            |export default ${importName};`
 
             const compilation = ctx._compilation
 
@@ -143,14 +141,21 @@ export default function (source: string) {
                 compilation.assets[assetPath] = toAsset(dtsAssetOutput)
                 callback()
             })
-            if(options.debug)  console.debug('dtsOutput\n', dtsAssetOutput)
+            if (options.debug) console.debug('dtsOutput\n', dtsAssetOutput)
         }
 
-        const jsOutput = stripMargin`
-            |export default { 
-            |\t${operations.map(renderKeyValue(fragments)).join(',' + EOL + '\t')}
+        const graphQlOperations = operations.map(renderKeyValue(fragments)).join(',' + EOL + '\t')
+
+        const jsOutput = options.exportNameBy ? stripMargin`
+            |export const ${importName} = {
+            |\t${graphQlOperations}  
+            |};
+            |export default ${importName};` : stripMargin`
+            |export default {
+            |\t${graphQlOperations}
             |}`
-        if(options.debug) console.debug('jsOutput\n', jsOutput)
+
+        if (options.debug) console.debug('jsOutput\n', jsOutput)
         return callback(null, jsOutput)
     } catch (error) {
         return callback(error)

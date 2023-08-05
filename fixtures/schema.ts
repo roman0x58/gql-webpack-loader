@@ -22,6 +22,10 @@ export interface QuerySomeQueryOperationArgsModel {
     id: string
 }
 
+export interface QueryFooSomeQueryOperationArgsModel {
+    x: number
+}
+
 export interface MutationSomeMutationOperationArgsModel {
     id: string
 }

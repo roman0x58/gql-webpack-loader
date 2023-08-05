@@ -2,7 +2,7 @@
 
 exports[`gql loader transforms GraphQL query to ES6 module and generates appropriate declaration file using provided schema: declaration 1`] = `
 "import type { GqlModule, GqlQuery } from 'gql-webpack-loader';
-import type { QuerySomeQueryOperationArgsModel, MutationSomeMutationOperationArgsModel, QueryModel, MutationModel } from "./schema.ts";
+import type { QuerySomeQueryOperationArgsModel, QueryFooSomeQueryOperationArgsModel, MutationSomeMutationOperationArgsModel, QueryModel, MutationModel } from "./schema.ts";
 
 export interface QueryOperationName1Query extends GqlQuery {
    "someQueryOperation"? : QueryModel["someQueryOperation"]    
@@ -14,9 +14,9 @@ export interface MutationOperationNameMutation extends GqlQuery {
    "someMutationOperation"? : MutationModel["someMutationOperation"]    
 }
 
-declare const _default: {
-	"queryOperationName1": GqlModule<QueryOperationName1Query, QuerySomeQueryOperationArgsModel>;
-	"queryOperationName2": GqlModule<QueryOperationName2Query, QuerySomeQueryOperationArgsModel>;
+export declare const _default: {
+	"queryOperationName1": GqlModule<QueryOperationName1Query, QuerySomeQueryOperationArgsModel & QueryFooSomeQueryOperationArgsModel>;
+	"queryOperationName2": GqlModule<QueryOperationName2Query, QuerySomeQueryOperationArgsModel & QueryFooSomeQueryOperationArgsModel>;
 	"mutationOperationName": GqlModule<MutationOperationNameMutation, MutationSomeMutationOperationArgsModel>
 };
 
@@ -24,12 +24,15 @@ export default _default;"
 `;
 
 exports[`gql loader transforms GraphQL query to ES6 module and generates appropriate declaration file using provided schema: output 1`] = `
-"export default { 
+"export default {
 	"queryOperationName1": { 
-"query": \`query queryOperationName1($id: String) {
+"query": \`query queryOperationName1($id: String, $x: Int) {
   someQueryOperation(id: $id) {
     field1
     field2
+    field3(x: $x) {
+      field3_1
+    }
     ...Fragment1
   }
 }
@@ -58,13 +61,78 @@ fragment Fragment1 on SomeOperationReturnType {
 }"
 `;
 
-exports[`gql loader transforms GraphQL query to ES6 module without declaration: output 1`] = `
-"export default { 
+exports[`gql loader transforms GraphQL query to ES6 module with named import: declaration 1`] = `
+"import type { GqlModule, GqlQuery } from 'gql-webpack-loader';
+import type { QuerySomeQueryOperationArgsModel, QueryFooSomeQueryOperationArgsModel, MutationSomeMutationOperationArgsModel, QueryModel, MutationModel } from "./schema.ts";
+
+export interface QueryOperationName1Query extends GqlQuery {
+   "someQueryOperation"? : QueryModel["someQueryOperation"]    
+}
+export interface QueryOperationName2Query extends GqlQuery {
+   "someQueryOperation"? : QueryModel["someQueryOperation"]    
+}
+export interface MutationOperationNameMutation extends GqlQuery {
+   "someMutationOperation"? : MutationModel["someMutationOperation"]    
+}
+
+export declare const QueryGql: {
+	"queryOperationName1": GqlModule<QueryOperationName1Query, QuerySomeQueryOperationArgsModel & QueryFooSomeQueryOperationArgsModel>;
+	"queryOperationName2": GqlModule<QueryOperationName2Query, QuerySomeQueryOperationArgsModel & QueryFooSomeQueryOperationArgsModel>;
+	"mutationOperationName": GqlModule<MutationOperationNameMutation, MutationSomeMutationOperationArgsModel>
+};
+
+export default QueryGql;"
+`;
+
+exports[`gql loader transforms GraphQL query to ES6 module with named import: named-import 1`] = `
+"export const QueryGql = {
 	"queryOperationName1": { 
-"query": \`query queryOperationName1($id: String) {
+"query": \`query queryOperationName1($id: String, $x: Int) {
   someQueryOperation(id: $id) {
     field1
     field2
+    field3(x: $x) {
+      field3_1
+    }
+    ...Fragment1
+  }
+}
+fragment Fragment1 on SomeOperationReturnType {
+  field3
+}\`,
+"operation": "queryOperationName1" 
+},
+	"queryOperationName2": { 
+"query": \`query queryOperationName2($id: String) {
+  someQueryOperation(id: $id) {
+    field1
+  }
+}\`,
+"operation": "queryOperationName2" 
+},
+	"mutationOperationName": { 
+"query": \`mutation mutationOperationName($id: String) {
+  someMutationOperation(id: $id) {
+    field1
+    field2
+  }
+}\`,
+"operation": "mutationOperationName" 
+}  
+};
+export default QueryGql;"
+`;
+
+exports[`gql loader transforms GraphQL query to ES6 module without declaration: output 1`] = `
+"export default {
+	"queryOperationName1": { 
+"query": \`query queryOperationName1($id: String, $x: Int) {
+  someQueryOperation(id: $id) {
+    field1
+    field2
+    field3(x: $x) {
+      field3_1
+    }
     ...Fragment1
   }
 }
@@ -95,7 +163,7 @@ fragment Fragment1 on SomeOperationReturnType {
 
 exports[`gql loader transforms GraphQL query to ES6 module without variable interface name configuration: declaration 1`] = `
 "import type { GqlModule, GqlQuery } from 'gql-webpack-loader';
-import type { QuerySomeQueryOperationArgsModel, MutationSomeMutationOperationArgsModel, QueryModel, MutationModel } from "./schema.ts";
+import type { QuerySomeQueryOperationArgsModel, QueryFooSomeQueryOperationArgsModel, MutationSomeMutationOperationArgsModel, QueryModel, MutationModel } from "./schema.ts";
 
 export interface QueryOperationName1Query extends GqlQuery {
    "someQueryOperation"? : QueryModel["someQueryOperation"]    
@@ -107,9 +175,9 @@ export interface MutationOperationNameMutation extends GqlQuery {
    "someMutationOperation"? : MutationModel["someMutationOperation"]    
 }
 
-declare const _default: {
-	"queryOperationName1": GqlModule<QueryOperationName1Query, QuerySomeQueryOperationArgsModel>;
-	"queryOperationName2": GqlModule<QueryOperationName2Query, QuerySomeQueryOperationArgsModel>;
+export declare const _default: {
+	"queryOperationName1": GqlModule<QueryOperationName1Query, QuerySomeQueryOperationArgsModel & QueryFooSomeQueryOperationArgsModel>;
+	"queryOperationName2": GqlModule<QueryOperationName2Query, QuerySomeQueryOperationArgsModel & QueryFooSomeQueryOperationArgsModel>;
 	"mutationOperationName": GqlModule<MutationOperationNameMutation, MutationSomeMutationOperationArgsModel>
 };
 
@@ -117,12 +185,15 @@ export default _default;"
 `;
 
 exports[`gql loader transforms GraphQL query to ES6 module without variable interface name configuration: output 1`] = `
-"export default { 
+"export default {
 	"queryOperationName1": { 
-"query": \`query queryOperationName1($id: String) {
+"query": \`query queryOperationName1($id: String, $x: Int) {
   someQueryOperation(id: $id) {
     field1
     field2
+    field3(x: $x) {
+      field3_1
+    }
     ...Fragment1
   }
 }

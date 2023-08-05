@@ -1,7 +1,10 @@
-query queryOperationName1 ($id: String) {
+query queryOperationName1 ($id: String, $x: Int) {
     someQueryOperation(id: $id) {
         field1
         field2
+        field3(x: $x){
+            field3_1
+        }
         ...Fragment1
     }
 }
