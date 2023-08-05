@@ -2,7 +2,7 @@
 
 exports[`gql loader transforms GraphQL query to ES6 module and generates appropriate declaration file using provided schema: declaration 1`] = `
 "import type { GqlModule, GqlQuery } from 'gql-webpack-loader';
-import type { QuerySomeQueryOperationArgsModel, QueryFooSomeQueryOperationArgsModel, MutationSomeMutationOperationArgsModel, QueryModel, MutationModel } from "./schema.ts";
+import type { QueryField3SomeQueryOperationArgsModel, QuerySomeQueryOperationArgsModel, MutationSomeMutationOperationArgsModel, QueryModel, MutationModel } from "./schema.ts";
 
 export interface QueryOperationName1Query extends GqlQuery {
    "someQueryOperation"? : QueryModel["someQueryOperation"]    
@@ -15,8 +15,8 @@ export interface MutationOperationNameMutation extends GqlQuery {
 }
 
 export declare const _default: {
-	"queryOperationName1": GqlModule<QueryOperationName1Query, QuerySomeQueryOperationArgsModel & QueryFooSomeQueryOperationArgsModel>;
-	"queryOperationName2": GqlModule<QueryOperationName2Query, QuerySomeQueryOperationArgsModel & QueryFooSomeQueryOperationArgsModel>;
+	"queryOperationName1": GqlModule<QueryOperationName1Query, QueryField3SomeQueryOperationArgsModel & QuerySomeQueryOperationArgsModel>;
+	"queryOperationName2": GqlModule<QueryOperationName2Query, QuerySomeQueryOperationArgsModel>;
 	"mutationOperationName": GqlModule<MutationOperationNameMutation, MutationSomeMutationOperationArgsModel>
 };
 
@@ -63,7 +63,7 @@ fragment Fragment1 on SomeOperationReturnType {
 
 exports[`gql loader transforms GraphQL query to ES6 module with named import: declaration 1`] = `
 "import type { GqlModule, GqlQuery } from 'gql-webpack-loader';
-import type { QuerySomeQueryOperationArgsModel, QueryFooSomeQueryOperationArgsModel, MutationSomeMutationOperationArgsModel, QueryModel, MutationModel } from "./schema.ts";
+import type { QueryField3SomeQueryOperationArgsModel, QuerySomeQueryOperationArgsModel, MutationSomeMutationOperationArgsModel, QueryModel, MutationModel } from "./schema.ts";
 
 export interface QueryOperationName1Query extends GqlQuery {
    "someQueryOperation"? : QueryModel["someQueryOperation"]    
@@ -76,8 +76,8 @@ export interface MutationOperationNameMutation extends GqlQuery {
 }
 
 export declare const QueryGql: {
-	"queryOperationName1": GqlModule<QueryOperationName1Query, QuerySomeQueryOperationArgsModel & QueryFooSomeQueryOperationArgsModel>;
-	"queryOperationName2": GqlModule<QueryOperationName2Query, QuerySomeQueryOperationArgsModel & QueryFooSomeQueryOperationArgsModel>;
+	"queryOperationName1": GqlModule<QueryOperationName1Query, QueryField3SomeQueryOperationArgsModel & QuerySomeQueryOperationArgsModel>;
+	"queryOperationName2": GqlModule<QueryOperationName2Query, QuerySomeQueryOperationArgsModel>;
 	"mutationOperationName": GqlModule<MutationOperationNameMutation, MutationSomeMutationOperationArgsModel>
 };
 
@@ -163,7 +163,7 @@ fragment Fragment1 on SomeOperationReturnType {
 
 exports[`gql loader transforms GraphQL query to ES6 module without variable interface name configuration: declaration 1`] = `
 "import type { GqlModule, GqlQuery } from 'gql-webpack-loader';
-import type { QuerySomeQueryOperationArgsModel, QueryFooSomeQueryOperationArgsModel, MutationSomeMutationOperationArgsModel, QueryModel, MutationModel } from "./schema.ts";
+import type { QueryField3SomeQueryOperationArgsModel, QuerySomeQueryOperationArgsModel, MutationSomeMutationOperationArgsModel, QueryModel, MutationModel } from "./schema.ts";
 
 export interface QueryOperationName1Query extends GqlQuery {
    "someQueryOperation"? : QueryModel["someQueryOperation"]    
@@ -176,8 +176,8 @@ export interface MutationOperationNameMutation extends GqlQuery {
 }
 
 export declare const _default: {
-	"queryOperationName1": GqlModule<QueryOperationName1Query, QuerySomeQueryOperationArgsModel & QueryFooSomeQueryOperationArgsModel>;
-	"queryOperationName2": GqlModule<QueryOperationName2Query, QuerySomeQueryOperationArgsModel & QueryFooSomeQueryOperationArgsModel>;
+	"queryOperationName1": GqlModule<QueryOperationName1Query, QueryField3SomeQueryOperationArgsModel & QuerySomeQueryOperationArgsModel>;
+	"queryOperationName2": GqlModule<QueryOperationName2Query, QuerySomeQueryOperationArgsModel>;
 	"mutationOperationName": GqlModule<MutationOperationNameMutation, MutationSomeMutationOperationArgsModel>
 };
 

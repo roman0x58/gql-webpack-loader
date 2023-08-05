@@ -1,6 +1,6 @@
 {
   "name": "gql-webpack-loader",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "Naive GraphQL loader",
   "main": "index.js",
   "scripts": {

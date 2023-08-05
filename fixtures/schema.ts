@@ -22,7 +22,7 @@ export interface QuerySomeQueryOperationArgsModel {
     id: string
 }
 
-export interface QueryFooSomeQueryOperationArgsModel {
+export interface QueryField3SomeQueryOperationArgsModel {
     x: number
 }
 

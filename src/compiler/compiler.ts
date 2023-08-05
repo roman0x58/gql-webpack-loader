@@ -1,6 +1,5 @@
 import path from 'path';
-// @ts-ignore
-import webpack, { OutputFileSystem } from 'webpack';
+import webpack from 'webpack';
 
 import { createFsFromVolume, Volume } from 'memfs';
 import { LoaderOptions } from "../LoaderOptions";
@@ -31,8 +30,7 @@ export default (fixture: string, options: LoaderOptions): Promise<[webpack.Stats
             ],
         }
     });
-    const webpackFs = createFsFromVolume(new Volume())
-    compiler.outputFileSystem = webpackFs as unknown as OutputFileSystem;
+    compiler.outputFileSystem = createFsFromVolume(new Volume()) as unknown as webpack.Compiler['outputFileSystem'];
     compiler.outputFileSystem.join = path.join.bind(path);
     (compiler as any).webpack.ModuleFilenameHelpers.matchObject = () => false
 

@@ -35,9 +35,9 @@ yarn add gql-webpack-loader
         declaration: true,    
         mutationInterfaceName: 'MutationModel',
         queryInterfaceName: 'QueryModel',
-        variableInterfaceRe: (operationNode) =>
+        variableInterfaceRe: (operationNode, fieldName) =>
             // This used by default 
-            new RegExp(`(${operation.operation}).*(${operation.fieldOperationName}).*argsmodel`, 'gmi')
+            new RegExp(`(${operation.operation})(${fieldName + operation.fieldOperationName})argsmodel`, 'gmi')
     }    
 }
 ```

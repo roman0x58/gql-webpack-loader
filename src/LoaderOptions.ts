@@ -7,5 +7,5 @@ export interface LoaderOptions {
     mutationInterfaceName?: string
     queryInterfaceName?: string
     exportNameBy?:(fileName: string) => string
-    variableInterfaceRe?:(operation: OperationNode) => RegExp
+    variableInterfaceRe?:(operation: OperationNode, fieldName?: string) => RegExp
 }
