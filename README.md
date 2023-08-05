@@ -67,7 +67,7 @@ Name of your query model
 ### 5. variableInterfaceRe 
 #### Type: (node: OperationNode) => RegExp
 ###### Optional
-A function that takes an operation node as input and returns a regular expression to validate variable imports. If no variable model is found, { [key: string]: any } will be used.
+A function that takes an operation node as input, along with an optional nested field name, and returns a regular expression to validate variable imports. If no variable model is found, { [key: string]: any } will be used.
 
 ### 5. exportNameBy 
 #### Type: (fileName: string) => string
